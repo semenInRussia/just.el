@@ -24,7 +24,7 @@ In project you can copy only one file `just.el`, use followed shell
 code:
 
 ```shell
-wget https://github.com/semenInRussia/just.el
+wget https://raw.githubusercontent.com/semenInRussia/just.el/master/just.el
 ```
 
 ## Usage
