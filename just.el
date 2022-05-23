@@ -35,11 +35,11 @@
   "Swap keys and values of ALIST.
 For example, from its:
 
-\((p . 3) (l . 2)\)
+```\((p . 3) (l . 2)\)```
 
 Return its:
 
-\((3 . p) (2 . l)\)"
+```\((3 . p) (2 . l)\)```"
   (--map (cons (cdr it) (car it)) alist))
 
 (defun just-text-at-line (&optional pos is-trim)
