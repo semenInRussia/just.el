@@ -36,12 +36,38 @@
 (defcustom just-doc-function-commands-symbols
   '(defmacro defun) ;nofmt
   "List of symbols, if first of sexp one of that, then this is function."
-  :type '(list symbol))
+  :type '(list symbol)
+  :group 'just-doc)
 
-(defun just-doc-inject-to-readme (dest source)
-  "Add to README.md at path DEST documentation of functions at path SOURCE."
-  (with-current-buffer (find-file dest)
-    (search-forward-regexp "^#*\\W*Usage" nil t)
+(defcustom just-doc-project-path
+  "~/projects/just"
+  "Path to root of project `just'."
+  :type '(list symbol)
+  :group 'just-doc)
+
+(defcustom just-doc-readme-path
+  (f-join just-doc-project-path "REDME.md")
+  "Path to README.md file in which `just-doc' will inject documentation."
+  :type 'string
+  :group 'just-doc)
+
+(defcustom just-doc-source-path
+  (f-join just-doc-project-path "just.el")
+  "Path to README.md file in which `just-doc' will inject documentation."
+  :type 'string
+  :group 'just-doc)
+
+(defun just-doc-sync ()
+  "Sync source code of `just' and README.md of `just'."
+  (interactive)
+  (just-doc-inject-to-readme just-doc-readme-path
+                             just-doc-source-path))
+
+(defun just-doc-inject-to-readme (readme source)
+  "Add to README.md at path README documentation of functions at path SOURCE."
+  (with-current-buffer (find-file readme)
+    (search-forward-regexp "^#*\\W*Usage\n" nil t)
+    (newline)
     (push-mark nil nil t)
     (search-forward-regexp "^#*\\W*Contributing" nil t)
     (beginning-of-line)
