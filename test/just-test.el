@@ -96,7 +96,7 @@
     (just-for-each-line-when*
         (point-min)
         (point-max)
-        (save-excursion (s-suffix-p "!" (just-text-at-line)))
+        (just-line-suffix-p "!")
       (insert (number-to-string (line-number-at-pos))))
     (should (string-equal (buffer-string) "1one!\ntwo\n3three!"))))
 
@@ -107,10 +107,19 @@
     (newline)
     (insert "2")
     (goto-char (point-min))
-    (just-call-on-next-line* (line-number-at-pos))
-    (should (= (just-call-on-next-line* (line-number-at-pos)) 2))
+    (just-call-on-next-line 'line-number-at-pos)
+    (should (= (just-call-on-next-line 'line-number-at-pos) 2))
     (should (= (line-number-at-pos) 1))))
 
+(ert-deftest just-check-call-on-next-line
+    ()
+  (with-temp-buffer
+    (insert "1")
+    (newline)
+    (insert "2")
+    (just-call-on-next-line 'line-number-at-pos)
+    (should (= (just-call-on-prev-line 'line-number-at-pos) 1))
+    (should (= (line-number-at-pos) 2))))
 
 (provide 'just-test)
 
