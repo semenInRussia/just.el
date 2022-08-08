@@ -121,6 +121,14 @@
     (should (= (just-call-on-prev-line 'line-number-at-pos) 1))
     (should (= (line-number-at-pos) 2))))
 
+(ert-deftest just-check-text-in-region
+    ()
+  (with-temp-buffer
+    (insert "Any text")
+    (should-not (just-text-in-region))
+    (push-mark 5 nil t)
+    (should (string-equal (just-text-in-region) "text"))))
+
 (provide 'just-test)
 
 ;;; just-test.el ends here

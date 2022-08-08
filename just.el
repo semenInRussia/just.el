@@ -153,5 +153,10 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
   (push-mark beg nil t)
   (goto-char end))
 
+(defun just-text-in-region ()
+  "If the region is active, return text in the region, otherwise return nil."
+  (when (region-active-p)
+    (buffer-substring (region-beginning) (region-end))))
+
 (provide 'just)
 ;;; just.el ends here
