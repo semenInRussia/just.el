@@ -158,5 +158,16 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
   (when (region-active-p)
     (buffer-substring (region-beginning) (region-end))))
 
+(defun just-ensure-empty-line (&optional pos)
+  "If the line at POS isn't empty, then make new empty line after it.
+
+NOTE: no saving excursion"
+  (interactive)
+  (or pos (setq pos (point)))
+  (unless (just-line-is-whitespaces-p pos) ;nofmt
+    (goto-char pos)
+    (end-of-line)
+    (newline)))
+
 (provide 'just)
 ;;; just.el ends here

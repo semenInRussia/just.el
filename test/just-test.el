@@ -44,6 +44,10 @@
     (insert "a lot of text")
     (should (just-line-is-whitespaces-p (point-min)))))
 
+(ert-deftest just-check-line-is-whitespaces-p-at-empty-line
+    ()
+  (with-temp-buffer (should (just-line-is-whitespaces-p))))
+
 (ert-deftest just-check-reverse-alist
     ()
   (should
@@ -128,6 +132,15 @@
     (should-not (just-text-in-region))
     (push-mark 5 nil t)
     (should (string-equal (just-text-in-region) "text"))))
+
+(ert-deftest just-check-ensure-empty-line
+    ()
+  (with-temp-buffer
+    (insert "Any text")
+    (just-ensure-empty-line)
+    (should (string-equal (buffer-string) "Any text\n"))
+    (just-ensure-empty-line)
+    (should (string-equal (buffer-string) "Any text\n"))))
 
 (provide 'just-test)
 
