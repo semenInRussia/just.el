@@ -46,7 +46,7 @@
   :group 'just-doc)
 
 (defcustom just-doc-readme-path
-  (f-join just-doc-project-path "REDME.md")
+  (f-join just-doc-project-path "README.md")
   "Path to README.md file in which `just-doc' will inject documentation."
   :type 'string
   :group 'just-doc)
@@ -72,6 +72,7 @@
     (search-forward-regexp "^#*\\W*Contributing" nil t)
     (beginning-of-line)
     (delete-region (region-beginning) (region-end))
+    (deactivate-mark)
     (insert (just-doc-from-file source))))
 
 (defun just-doc-from-file (filename)
