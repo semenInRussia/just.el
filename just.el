@@ -53,6 +53,21 @@ POS defaults to `point'.  When IS-TRIM is non-nil return trimmed text at line"
      (buffer-substring-no-properties (point-at-bol) (point-at-eol)))
    (if is-trim (s-trim it) it)))
 
+(defun just--regexp-prefix (prefix s)
+  "Return t when the regexp PREFIX matches with S as prefix."
+  (-some->>
+      s
+    (s-matched-positions-all prefix)
+    (-first-item)
+    (car)                                ; the beginning of the matched position
+    (= 0)))
+
+(defun just-line-regexp-prefix-p (p &optional pos)
+  "Return t, when text of line at POS start with the regexp P.
+
+POS defaults to `point'."
+  (just--regexp-prefix p (just-text-at-line pos)))
+
 (defun just-line-prefix-p (p &optional pos is-trim)
   "Return t, when text of line at POS start with P.
 

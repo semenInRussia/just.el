@@ -66,6 +66,15 @@
     (should (just-line-prefix-p "****" (point-min)))
     (should-not (just-line-prefix-p "*****" (point-min)))))
 
+(ert-deftest just-check-line-regexp-prefix-p
+    ()
+  (with-temp-buffer
+    (insert "**** Important Text")
+    (should (just-line-regexp-prefix-p "\\*+"))
+    (newline)
+    (insert "**** Important Text")
+    (should (just-line-regexp-prefix-p "\\*+" (point-min)))))
+
 (ert-deftest just-check-line-has-text-p
     ()
   (with-temp-buffer
