@@ -96,17 +96,22 @@
 (defun just-doc-search-functions-in-source (source)
   "Search defnitions of functions in Emacs Lisp SOURCE.
 
-Return list of `just-doc-function'."
+Return list of `just-doc-function' objects."
   (->>
    source
    (just-doc-remove-elisp-comments)
    (just-doc-read-all-sexps)
+   (-remove #'just-doc-ignore-function-p)
    (-keep #'just-doc-function-from-sexp)
    (-sort (-on #'s-less-p #'just-doc-function-name))))
 
 (defun just-doc-read-all-sexps (source)
   "Read all Lisp sexps from SOURCE."
   (->> source (format "(%s)") (read)))
+
+(defun just-doc-ignore-function-p (fun)
+  "Return t, when object of `just-doc-function' FUN shouldn't be viewed."
+  (s-starts-with-p "just--" (just-doc-function-name fun)))
 
 (defun just-doc-function-from-sexp (sexp)
   "Make `just-doc-function' from SEXP.
