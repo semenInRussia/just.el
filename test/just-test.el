@@ -145,11 +145,11 @@
 (ert-deftest just-check-ensure-empty-line
     ()
   (with-temp-buffer
-    (insert "Any text")
+    (insert "  Any text")
     (just-ensure-empty-line)
-    (should (string-equal (buffer-string) "Any text\n"))
+    (should (string-equal (buffer-string) "  Any text\n  "))
     (just-ensure-empty-line)
-    (should (string-equal (buffer-string) "Any text\n"))))
+    (should (string-equal (buffer-string) "  Any text\n  "))))
 
 (provide 'just-test)
 

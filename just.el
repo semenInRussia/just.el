@@ -182,7 +182,7 @@ NOTE: no saving excursion"
   (unless (just-line-is-whitespaces-p pos) ;nofmt
     (goto-char pos)
     (end-of-line)
-    (newline)))
+    (newline-and-indent)))
 
 (provide 'just)
 ;;; just.el ends here
