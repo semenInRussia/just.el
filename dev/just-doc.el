@@ -41,19 +41,19 @@
 
 (defcustom just-doc-project-path
   "~/projects/just"
-  "Path to root of project `just'."
+  "Path to the root of the project `just'."
   :type '(list symbol)
   :group 'just-doc)
 
 (defcustom just-doc-readme-path
   (f-join just-doc-project-path "README.md")
-  "Path to README.md file in which `just-doc' will inject documentation."
+  "Path to the README.md file in which `just-doc' will inject documentation."
   :type 'string
   :group 'just-doc)
 
 (defcustom just-doc-source-path
   (f-join just-doc-project-path "just.el")
-  "Path to README.md file in which `just-doc' will inject documentation."
+  "Path to the just.el source code file from which `just-doc' will parse info."
   :type 'string
   :group 'just-doc)
 
@@ -79,6 +79,12 @@
   "Make documentation from file at FILENAME, return markdown source."
   (-> filename (f-read 'utf-8) (just-doc-from-source)))
 
+(defclass just-doc-function ()
+  ((name :initarg :name :accessor just-doc-function-name)
+   (docstring :initarg :docstring :accessor just-doc-function-docstring)
+   (args :initarg :args :accessor just-doc-function-args))
+  "Class for function of Emacs lisp.")
+
 (defun just-doc-from-source (source)
   "Make documentation from elisp SOURCE, return markdown source code."
   (->>
@@ -86,12 +92,6 @@
    (just-doc-search-functions-in-source)
    (-map #'just-doc-function-to-markdown)
    (s-join "\n")))
-
-(defclass just-doc-function ()
-  ((name :initarg :name :accessor just-doc-function-name)
-   (docstring :initarg :docstring :accessor just-doc-function-docstring)
-   (args :initarg :args :accessor just-doc-function-args))
-  "Class for function of Emacs lisp.")
 
 (defun just-doc-search-functions-in-source (source)
   "Search defnitions of functions in Emacs Lisp SOURCE.
@@ -101,40 +101,59 @@ Return list of `just-doc-function' objects."
    source
    (just-doc-remove-elisp-comments)
    (just-doc-read-all-sexps)
-   (-remove #'just-doc-ignore-function-p)
-   (-keep #'just-doc-function-from-sexp)
-   (-sort (-on #'s-less-p #'just-doc-function-name))))
+   (-keep #'just-doc-function-from-sexp)))
 
 (defun just-doc-read-all-sexps (source)
   "Read all Lisp sexps from SOURCE."
-  (->> source (format "(%s)") (read)))
+  (read (format "(%s)" source)))
 
-(defun just-doc-ignore-function-p (fun)
-  "Return t, when object of `just-doc-function' FUN shouldn't be viewed."
-  (s-starts-with-p "just--" (just-doc-function-name fun)))
+(defun just-doc--as-separated-word (string)
+  "Return regexp which match to STRING as word with whitespaces around."
+  (format "\\<%s\\>" string))
+
+(defun just-doc-remove-elisp-comments (source)
+  "Remove from elisp SOURCE code comments with ;;."
+  (->>
+   source
+   (s-lines)
+   (--remove (s-prefix-p ";" (s-trim it)))
+   (--map (-first-item (s-split ";" it)))
+   (s-join "\n")))
 
 (defun just-doc-function-from-sexp (sexp)
   "Make `just-doc-function' from SEXP.
 
 SEXP is list of symbols, like on Elisp source."
-  (when (-contains-p just-doc-function-commands-symbols (car sexp))
-    (->>
-     (just-doc-function
-      :name (symbol-name (-second-item sexp))
-      :args (-third-item sexp)
-      :docstring (-fourth-item sexp))
-     (just-doc-set-function-docstring-to-markdown))))
+  (and
+   (listp sexp)
+   (-contains-p just-doc-function-commands-symbols (car sexp))
+   (just-doc-function
+    :name (symbol-name (-second-item sexp))
+    :args (-third-item sexp)
+    :docstring (-fourth-item sexp))))
 
-(defun just-doc-set-function-docstring-to-markdown (fun)
-  "Transform elisp docstring of FUN to markdown source."
-  (->>
-   fun
-   (just-doc-function-docstring-to-markdown)
-   (setf (just-doc-function-docstring fun)))
-  fun)
+(defun just-doc-ignore-function-p (fun)
+  "Return t, when object of `just-doc-function' FUN shouldn't be viewed."
+  (s-starts-with-p "just--" (just-doc-function-name fun)))
 
-(defun just-doc-function-docstring-to-markdown (fun)
-  "Transform elisp docstring of FUN to markdown source, return markdown source."
+(defun just-doc-function-to-markdown (fun)
+  "Transform FUN (obj `just-doc-function') to markdown source code."
+  (let ((name (just-doc-function-name fun))
+        (docstring (just-doc-function-markdown-docstring fun))
+        (args
+         (just-doc-function-args-to-markdown
+          (just-doc-function-args fun))))
+    (s-lex-format "### ${name} `${args}`
+
+${docstring}
+")))
+
+(defun just-doc-function-args-to-markdown (fun-args)
+  "Transform FUN-ARGS to a markdown source."
+  (if fun-args (format "%s" fun-args) "()"))
+
+(defun just-doc-function-markdown-docstring (fun)
+  "Convert elisp docstring of FUN to markdown source."
   (->>
    fun
    (just-doc-function-args)
@@ -150,29 +169,6 @@ SEXP is list of symbols, like on Elisp source."
   "Denote S with syntax of markdown.
 `print` is example of the denoted word"
   (format "`%s`" s))
-
-(defun just-doc--as-separated-word (string)
-  "Return regexp which match to STRING as word with whitespaces around."
-  (format "\\<%s\\>" string))
-
-(defun just-doc-remove-elisp-comments (source)
-  "Remove from elisp SOURCE code comments with ;;."
-  (->>
-   source
-   (s-lines)
-   (--remove (s-prefix-p ";" (s-trim it)))
-   (--map (-first-item (s-split ";" it)))
-   (s-join "\n")))
-
-(defun just-doc-function-to-markdown (fun)
-  "Transform FUN (obj `just-doc-function') to markdown source code."
-  (let ((name (just-doc-function-name fun))
-        (docstring (just-doc-function-docstring fun))
-        (args (just-doc-function-args fun)))
-    (s-lex-format "### ${name} `${args}`
-
-${docstring}
-")))
 
 (provide 'just-doc)
 ;;; just-doc.el ends here
