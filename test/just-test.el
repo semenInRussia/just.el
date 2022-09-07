@@ -179,6 +179,31 @@ proverbial paradise.")
     (should (= (just-forward-point-at-regexp "^Do") 599))
     (should (= (just-forward-point-at-regexp "this" nil 2) 255))))
 
+(ert-deftest just-check-search-forward-one-of-regexp
+    ()
+  (with-temp-buffer
+    (insert "
+\\begin{itemize}
+\\item 1
+\\item 2
+\\item 3
+\\item 4
+\\end{itemize}
+
+\\begin{itemize}
+\\item 1
+\\item 2
+\\item 3
+\\item 4
+\\end{itemize}")
+    (goto-char (point-min))
+    (just-search-forward-one-of-regexp
+     '("\\\\end{itemize}" "\\\\item"))
+    (should (equal (just-text-at-line) "\\item 1"))
+    (just-search-forward-one-of-regexp
+     '("\\\\end{itemize}" "\\\\item")
+     nil 4)
+    (should (equal (just-text-at-line) "\\end{itemize}"))))
 
 (provide 'just-test)
 

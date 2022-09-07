@@ -98,8 +98,49 @@ one in the buffer located entirely after/before the origin of the
 search."
   (just-forward-point-at-regexp regexp bound (- (or count 1))))
 
+(defun just-search-backward-one-of-regexp (regexps &optional bound count)
+  "Go to the backward match with one of REGEXPS which is closest.
+
+Point of each match with one of REGEXPS should be  via
+`just-forward-point-at-regexp' with passed arguments BOUND.
+
+Repeat it COUNT times, if COUNT isn't positive, then do forward search"
+  (just-search-forward-one-of-regexp regexps bound (- (or count 1))))
+
+(defun just-search-forward-one-of-regexp (regexps &optional bound count)
+  "Go to the forward match with one of REGEXPS which is closest.
+
+Point of each match with one of REGEXPS should be found via
+`just-forward-point-at-regexp' with passed arguments BOUND.
+
+Repeat it COUNT times, if COUNT isn't positive, then do bacward search"
+  (or count (setq count 1))
+  (let ((forward-point (point))
+        (n (1+ (abs count))))
+    (while (and forward-point (not (zerop n)))
+      (goto-char forward-point)
+      (setq forward-point
+            (just--forward-closest-regexp-match-point regexps
+                                                      bound
+                                                      count))
+      (decf n))))
+
+(defun just--forward-closest-regexp-match-point (regexps &optional bound count)
+  "Go to the match with one of REGEXPS which is closest with the current point.
+
+Point of each match with one of REGEXPS should be found via
+`just-forward-point-at-regexp' with passed arguments BOUND.
+
+COUNT will be ignored as integer and will be readed as `signum' (0, -1, 1) for
+the backward/forward search."
+  (or count (setq count 1))
+  (-some->> regexps
+    (--map (just-forward-point-at-regexp it bound (signum count)))
+    (-filter 'numberp)
+    (apply 'min)))
+
 (defun just--regexp-prefix (prefix s)
-  "Return t when the regexp PREFIX matches with S as prefix."
+  "Return t when the regexp PREFIX match with S as prefix."
   (-some->>
       s
     (s-matched-positions-all prefix)
