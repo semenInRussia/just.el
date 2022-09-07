@@ -134,10 +134,11 @@ Point of each match with one of REGEXPS should be found via
 COUNT will be ignored as integer and will be readed as `signum' (0, -1, 1) for
 the backward/forward search."
   (or count (setq count 1))
-  (-some->> regexps
-    (--map (just-forward-point-at-regexp it bound (signum count)))
-    (-filter 'numberp)
-    (apply 'min)))
+  (let ((pos (point)))
+    (-some->> regexps
+      (--map (just-forward-point-at-regexp it bound (signum count)))
+      (-filter 'numberp)
+      (--min-by (abs (- it pos))))))
 
 (defun just--regexp-prefix (prefix s)
   "Return t when the regexp PREFIX match with S as prefix."
