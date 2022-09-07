@@ -125,20 +125,28 @@ Repeat it COUNT times, if COUNT isn't positive, then do bacward search"
                                                       count))
       (decf n))))
 
-(defun just--forward-closest-regexp-match-point (regexps &optional bound count)
+(defun just--forward-closest-regexp-match-point (regexps &optional bound arrow)
   "Go to the match with one of REGEXPS which is closest with the current point.
 
 Point of each match with one of REGEXPS should be found via
 `just-forward-point-at-regexp' with passed arguments BOUND.
 
-COUNT will be ignored as integer and will be readed as `signum' (0, -1, 1) for
-the backward/forward search."
-  (or count (setq count 1))
-  (let ((pos (point)))
-    (-some->> regexps
-      (--map (just-forward-point-at-regexp it bound (signum count)))
-      (-filter 'numberp)
-      (--min-by (abs (- it pos))))))
+ARROW refers to the way in which will do search, if ARROW is positive then
+searches will be forward, if ARROW is negative, then searches will be backward."
+  (or arrow (setq arrow 1))
+  (let ((count (signum arrow))
+        (pos (point)))
+    (->>
+     regexps
+     (--keep (just-forward-point-at-regexp it bound count))
+     (just--min-by
+      (>
+       (abs (- pos it))
+       (abs (- pos other)))))))
+
+(defmacro just--min-by (compare nums)
+  "Return the minimal of the NUMS comaring with evaluating of the COMPARE."
+  `(and ,nums (--min-by ,compare ,nums)))
 
 (defun just--regexp-prefix (prefix s)
   "Return t when the regexp PREFIX match with S as prefix."
