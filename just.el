@@ -53,6 +53,51 @@ POS defaults to `point'.  When IS-TRIM is non-nil return trimmed text at line"
      (buffer-substring-no-properties (point-at-bol) (point-at-eol)))
    (if is-trim (s-trim it) it)))
 
+(defun just-forward-point-at-regexp (regexp &optional bound count)
+  "Return the position of a next match with REGEXP.
+
+Return nil, if REGEXPS don't matches with the buffer text.
+
+The optional second argument BOUND is a buffer position that bounds
+the search.  The match found must not end after that position.  A
+value of nil means search to the end of the accessible portion of
+the buffer.
+
+The optional third argument COUNT is a number that indicates the
+search direction and the number of occurrences to search for.  If it
+is positive, search forward for COUNT successive occurrences; if it
+is negative, search backward, instead of forward, for -COUNT
+occurrences.  A value of nil means the same as 1.
+
+With COUNT positive/negative, the match found is the COUNTth/-COUNTth
+one in the buffer located entirely after/before the origin of the
+search."
+  (save-excursion
+    (and                                ;nofmt
+     (search-forward-regexp regexp bound t count)
+     (point))))
+
+(defun just-backward-point-at-regexp (regexp &optional bound count)
+  "Return the position of a previous match with REGEXP.
+
+Return nil, if REGEXPS don't matches with the buffer text.
+
+The optional second argument BOUND is a buffer position that bounds
+the search.  The match found must not end after that position.  A
+value of nil means search to the end of the accessible portion of
+the buffer.
+
+The optional third argument COUNT is a number that indicates the
+search direction and the number of occurrences to search for.  If it
+is positive, search backward for COUNT successive occurrences; if it
+is negative, search forward, instead of backward, for -COUNT
+occurrences.  A value of nil means the same as 1.
+
+With COUNT positive/negative, the match found is the COUNTth/-COUNTth
+one in the buffer located entirely after/before the origin of the
+search."
+  (just-forward-point-at-regexp regexp bound (- (or count 1))))
+
 (defun just--regexp-prefix (prefix s)
   "Return t when the regexp PREFIX matches with S as prefix."
   (-some->>
