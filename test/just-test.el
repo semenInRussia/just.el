@@ -205,6 +205,30 @@ proverbial paradise.")
      nil 4)
     (should (equal (just-text-at-line) "\\end{itemize}"))))
 
+(ert-deftest just-check-delete-chars-backward
+    ()
+  (with-temp-buffer
+    (insert "j.   ")
+    (just-delete-chars-backward "., ")
+    (should (= (point) 2))))
+
+(ert-deftest just-check-spaces-to-1
+    ()
+  (with-temp-buffer
+    (insert "j.   ")
+    (just-spaces-to-1)
+    (should (equal (just-text-at-line) "j. "))))
+
+(ert-deftest just-mark-region-between-movements
+    ()
+  (with-temp-buffer
+    (insert "    Napoli! Is champion!")
+    (just-mark-region-between-movements
+     'beginning-of-line-text
+     'end-of-line)
+    (should (= (region-beginning) 5))
+    (should (= (region-end) 25))))
+
 (provide 'just-test)
 
 ;;; just-test.el ends here
