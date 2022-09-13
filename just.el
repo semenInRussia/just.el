@@ -260,7 +260,7 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
 
 (defun just-mark-region (beg end)
   "Mark region between BEG and END."
-  (push-mark beg nil t)
+  (set-mark (point))
   (goto-char end))
 
 (defun just-mark-region-between-movements (start-move &optional end-move)
@@ -269,7 +269,7 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
     (let ((init-pos (point))
           (end-move (or end-move (lambda () (goto-char init-pos)))))
       (funcall start-move)
-      (push-mark nil nil t)
+      (set-mark (point))
       (funcall end-move))))
 
 (defun just-text-in-region ()
@@ -295,11 +295,10 @@ NOTE: no saving excursion"
 
 (defun just-delete-chars-backward (string &optional lim)
   "Delete chars backward, stopping after a char not in STRING, or at pos LIM."
-  (interactive "P")
-  (save-excursion
-    (skip-chars-backward string lim)
-    (push-mark nil nil t))
-  (delete-region (region-beginning) (region-end)))
+  (delete-backward-char
+   ;; `skip-chars-backward' return distance from `point` to the original
+   ;; position
+   (skip-chars-backward string lim)))
 
 (provide 'just)
 ;;; just.el ends here
