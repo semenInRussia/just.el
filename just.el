@@ -290,15 +290,20 @@ NOTE: no saving excursion"
 
 (defun just-spaces-to-1 ()
   "Delete spaces backward and insert one space instead."
-  (just-delete-chars-backward " ")
-  (insert " "))
+  (let ((distance (just-delete-chars-backward " ")))
+    (insert " ")
+    (and distance (1+ distance))))
 
 (defun just-delete-chars-backward (string &optional lim)
-  "Delete chars backward, stopping after a char not in STRING, or at pos LIM."
-  (delete-backward-char
-   ;; `skip-chars-backward' return distance from `point` to the original
-   ;; position
-   (skip-chars-backward string lim)))
+  "Delete chars backward, stopping after a char not in STRING, or at pos LIM.
+
+Returns the distance traveled, either zero or negative."
+  (let ((distance
+         ;; `skip-chars-backward' return distance from `point` to the original
+         ;; position
+         (skip-chars-backward string lim)))
+    (delete-backward-char distance)
+    distance))
 
 (provide 'just)
 ;;; just.el ends here

@@ -209,14 +209,14 @@ proverbial paradise.")
     ()
   (with-temp-buffer
     (insert "j.   ")
-    (just-delete-chars-backward "., ")
+    (should (= (just-delete-chars-backward "., ") -4))
     (should (= (point) 2))))
 
 (ert-deftest just-check-spaces-to-1
     ()
   (with-temp-buffer
     (insert "j.   ")
-    (just-spaces-to-1)
+    (should (= (just-spaces-to-1) -2))
     (should (equal (just-text-at-line) "j. "))))
 
 (ert-deftest just-mark-region-between-movements
