@@ -306,12 +306,21 @@ Returns the distance traveled, either zero or negative."
     distance))
 
 (defmacro just-with-same-buffer (&rest body)
-  "Evaluate BODY and switch to the initial buffer when end evaluating."
+  "Evaluate BODY and switch to the initial buffer when end evaluating.
+
+The value returned is the value of the last form in BODY."
   (declare (indent 0))
   `(let ((start-buffer (current-buffer)))
-     (unwind-protect
-          (progn ,@body)
-       (switch-to-buffer start-buffer))))
+     (unwind-protect (progn ,@body) (set-buffer start-buffer))))
+
+(defun just-major-mode-of-buffer (buffer-or-name)
+  "Return a major mode of the buffer BUFFER-OR-NAME.
+
+BUFFER-OR-NAME must be a buffer or the name of an existing buffer.
+The value returned is the value of the last form in BODY."
+  (just-with-same-buffer                ;nofmt
+    (set-buffer buffer-or-name)
+    major-mode))
 
 (provide 'just)
 ;;; just.el ends here
