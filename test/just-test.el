@@ -139,7 +139,7 @@
   (with-temp-buffer
     (insert "Any text")
     (should-not (just-text-in-region))
-    (push-mark 5 nil t)
+    (set-mark 5)
     (should (string-equal (just-text-in-region) "text"))))
 
 (ert-deftest just-check-ensure-empty-line
@@ -219,7 +219,7 @@ proverbial paradise.")
     (should (= (just-spaces-to-1) -2))
     (should (equal (just-text-at-line) "j. "))))
 
-(ert-deftest just-mark-region-between-movements
+(ert-deftest just-check-mark-region-between-movements
     ()
   (with-temp-buffer
     (insert "    Napoli! Is champion!")
@@ -228,6 +228,16 @@ proverbial paradise.")
      'end-of-line)
     (should (= (region-beginning) 5))
     (should (= (region-end) 25))))
+
+(ert-deftest just-check-with-same-buffer
+    ()
+  (with-temp-buffer
+    (let ((messages-mode
+           (just-with-same-buffer
+             (switch-to-buffer "*Messages*")
+             major-mode)))
+      (should (eq messages-mode 'messages-buffer-mode))
+      (should-not (eq major-mode 'messages-buffer-mode)))))
 
 (provide 'just-test)
 

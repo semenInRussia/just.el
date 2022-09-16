@@ -292,7 +292,7 @@ NOTE: no saving excursion"
   "Delete spaces backward and insert one space instead."
   (let ((distance (just-delete-chars-backward " ")))
     (insert " ")
-    (and distance (1+ distance))))
+    (1+ distance)))
 
 (defun just-delete-chars-backward (string &optional lim)
   "Delete chars backward, stopping after a char not in STRING, or at pos LIM.
@@ -304,6 +304,14 @@ Returns the distance traveled, either zero or negative."
          (skip-chars-backward string lim)))
     (delete-backward-char distance)
     distance))
+
+(defmacro just-with-same-buffer (&rest body)
+  "Evaluate BODY switch to the initial buffer when end evaluating."
+  (declare (indent 0))
+  `(let ((start-buffer (current-buffer)))
+     (unwind-protect
+          (progn ,@body)
+       (switch-to-buffer start-buffer))))
 
 (provide 'just)
 ;;; just.el ends here
