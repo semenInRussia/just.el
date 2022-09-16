@@ -234,10 +234,19 @@ proverbial paradise.")
   (with-temp-buffer
     (let ((messages-mode
            (just-with-same-buffer
-             (switch-to-buffer "*Messages*")
+             (set-buffer "*Messages*")
              major-mode)))
       (should (eq messages-mode 'messages-buffer-mode))
       (should-not (eq major-mode 'messages-buffer-mode)))))
+
+(ert-deftest just-check-with-same-buffer-errors
+    ()
+  (with-temp-buffer
+    (should-error
+     (just-with-same-buffer
+       (set-buffer "*Messages*")
+       (error "Stranger bug of the language")))
+    (should-not (eq major-mode 'messages-buffer-mode))))
 
 (provide 'just-test)
 
