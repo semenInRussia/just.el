@@ -155,15 +155,14 @@ ${docstring}
 (defun just-doc-function-markdown-docstring (fun)
   "Convert elisp docstring of FUN to markdown source."
   (->>
-   fun
-   (just-doc-function-args)
    (--reduce-from
     (s-replace-regexp
      (just-doc--as-separated-word (symbol-name it))
      (just-doc--markdown-denote it)
      acc)
-    (just-doc-function-docstring fun))
-   (s-replace-regexp "`\\([^`]+\\)'" "`\\1`")))
+    (just-doc-function-docstring fun)
+    (just-doc-function-args fun))
+   (s-replace-regexp "`\\(.+?\\)'" "`\\1`")))
 
 (defun just-doc--markdown-denote (s)
   "Denote S with syntax of markdown.

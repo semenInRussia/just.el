@@ -306,7 +306,7 @@ Returns the distance traveled, either zero or negative."
     distance))
 
 (defmacro just-with-same-buffer (&rest body)
-  "Evaluate BODY switch to the initial buffer when end evaluating."
+  "Evaluate BODY and switch to the initial buffer when end evaluating."
   (declare (indent 0))
   `(let ((start-buffer (current-buffer)))
      (unwind-protect
