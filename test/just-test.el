@@ -229,6 +229,17 @@ proverbial paradise.")
     (should (= (region-beginning) 5))
     (should (= (region-end) 25))))
 
+(ert-deftest just-check-mark-region-between-movements-end
+    ()
+  (with-temp-buffer
+    (insert "    Napoli! Is champion!")
+    (just-mark-region-between-movements
+     'beginning-of-line-text
+     'end-of-line)
+    (beginning-of-line)
+    (should (= (region-beginning) 5))
+    (should (= (region-end) 25))))
+
 (ert-deftest just-check-with-same-buffer
     ()
   (with-temp-buffer

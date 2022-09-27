@@ -265,12 +265,11 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
 
 (defun just-mark-region-between-movements (start-move &optional end-move)
   "Mark region beetwen 2 points of the call START-MOVE and END-MOVE."
-  (save-excursion
-    (let ((init-pos (point))
-          (end-move (or end-move (lambda () (goto-char init-pos)))))
-      (funcall start-move)
-      (set-mark (point))
-      (funcall end-move))))
+  (let ((init-pos (point))
+        (end-move (or end-move (lambda () (goto-char init-pos)))))
+    (funcall start-move)
+    (set-mark (point))
+    (funcall end-move)))
 
 (defun just-text-in-region ()
   "If the region is active, return text in the region, otherwise return nil."
@@ -311,7 +310,9 @@ Returns the distance traveled, either zero or negative."
 The value returned is the value of the last form in BODY."
   (declare (indent 0))
   `(let ((start-buffer (current-buffer)))
-     (unwind-protect (progn ,@body) (set-buffer start-buffer))))
+     (unwind-protect
+          (progn ,@body)
+       (switch-to-buffer start-buffer t))))
 
 (defun just-major-mode-of-buffer (buffer-or-name)
   "Return a major mode of the buffer BUFFER-OR-NAME.
