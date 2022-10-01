@@ -236,7 +236,6 @@ proverbial paradise.")
     (just-mark-region-between-movements
      'beginning-of-line-text
      'end-of-line)
-    (beginning-of-line)
     (should (= (region-beginning) 5))
     (should (= (region-end) 25))))
 
@@ -258,6 +257,15 @@ proverbial paradise.")
        (set-buffer "*Messages*")
        (error "Stranger bug of the language")))
     (should-not (eq major-mode 'messages-buffer-mode))))
+
+(ert-deftest just-check-mark-region
+    ()
+  (with-temp-buffer
+    (insert "Some very rangom text, with some errors< but this isn't matter.")
+    (just-mark-region 5 9)
+    (should (= (region-beginning) 5))
+    (should (= (region-end) 9))))
+
 
 (provide 'just-test)
 

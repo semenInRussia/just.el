@@ -134,7 +134,7 @@ Point of each match with one of REGEXPS should be found via
 ARROW refers to the way in which will do search, if ARROW is positive then
 searches will be forward, if ARROW is negative, then searches will be backward."
   (or arrow (setq arrow 1))
-  (let ((count (signum arrow))
+  (let ((count (just--signum arrow))
         (pos (point)))
     (->>
      regexps
@@ -143,6 +143,15 @@ searches will be forward, if ARROW is negative, then searches will be backward."
       (>
        (abs (- pos it))
        (abs (- pos other)))))))
+
+(defun just--signum (n)
+  "Return either 0, if N is zero, +1 if N is positive or -1 if N is negative."
+  (cond
+   ((> n 0)
+    +1)
+   ((< n 0)
+    -1)
+   (t 0)))
 
 (defmacro just--min-by (compare nums)
   "Return the minimal of the NUMS comaring with evaluating of the COMPARE."
@@ -195,12 +204,12 @@ at line"
 (defun just-completing-read-numbers (prompt ; nofmt
                                      collection
                                      &optional
-                                       predicate
-                                       require-match
-                                       initial-input
-                                       hist
-                                       def
-                                       inherit-input-method)
+                                     predicate
+                                     require-match
+                                     initial-input
+                                     hist
+                                     def
+                                     inherit-input-method)
   "Read number from the minibuffer, with completion to one of COLLECTION.
 For documentation of PROMPT PREDICATE REQUIRE-MATCH INITIAL-INPUT HIST DEF
 INHERIT-INPUT-METHOD, see to original function `completing-read'"
@@ -260,16 +269,15 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
 
 (defun just-mark-region (beg end)
   "Mark region between BEG and END."
-  (set-mark (point))
+  (set-mark beg)
   (goto-char end))
 
 (defun just-mark-region-between-movements (start-move &optional end-move)
   "Mark region beetwen 2 points of the call START-MOVE and END-MOVE."
-  (let ((init-pos (point))
-        (end-move (or end-move (lambda () (goto-char init-pos)))))
+  (let ((init-pos (point)))
     (funcall start-move)
     (set-mark (point))
-    (funcall end-move)))
+    (if end-move (funcall end-move) (goto-char init-pos))))
 
 (defun just-text-in-region ()
   "If the region is active, return text in the region, otherwise return nil."
@@ -301,7 +309,7 @@ Returns the distance traveled, either zero or negative."
          ;; `skip-chars-backward' return distance from `point` to the original
          ;; position
          (skip-chars-backward string lim)))
-    (delete-backward-char distance)
+    (delete-char (- distance))
     distance))
 
 (defmacro just-with-same-buffer (&rest body)
@@ -311,7 +319,7 @@ The value returned is the value of the last form in BODY."
   (declare (indent 0))
   `(let ((start-buffer (current-buffer)))
      (unwind-protect
-          (progn ,@body)
+         (progn ,@body)
        (switch-to-buffer start-buffer t))))
 
 (defun just-major-mode-of-buffer (buffer-or-name)
