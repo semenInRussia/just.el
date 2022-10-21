@@ -267,6 +267,14 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
   "Run F on previous line, saving excursion."
   (just-call-on-prev-line* (funcall f)))
 
+(defmacro just-call-on-backward-char* (&rest body)
+  "Evaluate BODY on backward char, saving excursion."
+  `(save-excursion (forward-char -1) ,@body))
+
+(defun just-call-on-backward-char (f)
+  "Run F on previous line, saving excursion."
+  (just-call-on-backward-char* (funcall f)))
+
 (defun just-mark-region (beg end)
   "Mark region between BEG and END."
   (set-mark beg)

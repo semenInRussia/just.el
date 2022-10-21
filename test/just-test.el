@@ -151,6 +151,14 @@
     (just-ensure-empty-line)
     (should (string-equal (buffer-string) "  Any text\n  "))))
 
+(ert-deftest just-check-call-on-backward-char
+    ()
+  (with-temp-buffer
+    (insert "12")
+    (should (= (just-call-on-backward-char 'point) 2))
+    (should (= (just-call-on-backward-char* (point)) 2))
+    (should (= (point) 3))))
+
 (ert-deftest just-check-forward-point-at-regexp
     ()
   (with-temp-buffer
