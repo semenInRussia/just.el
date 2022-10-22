@@ -5,6 +5,7 @@
 ;; Author: Semen Khramtsov <hrams205@gmail.com>
 ;; Version: 0.1
 ;; URL: https://github.com/semenInRussia/just.el
+;; Package-Requires: ((emacs "24.3") (dash "2.19.1") (s "1.13.1"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -29,6 +30,7 @@
 ;;; Code:
 
 (require 'dash)
+(require 'cl-lib)
 (require 's)
 
 (defun just-reverse-alist (alist)
@@ -123,7 +125,7 @@ Repeat it COUNT times, if COUNT isn't positive, then do bacward search"
             (just--forward-closest-regexp-match-point regexps
                                                       bound
                                                       count))
-      (decf n))))
+      (cl-decf n))))
 
 (defun just--forward-closest-regexp-match-point (regexps &optional bound arrow)
   "Go to the match with one of REGEXPS which is closest with the current point.
