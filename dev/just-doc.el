@@ -77,7 +77,7 @@
 
 (defun just-doc-from-file (filename)
   "Make documentation from file at FILENAME, return markdown source."
-  (-> filename (f-read 'utf-8) (just-doc-from-source)))
+  (just-doc-from-source (f-read filename)))
 
 (defclass just-doc-function ()
   ((name :initarg :name :accessor just-doc-function-name)
@@ -101,7 +101,8 @@ Return list of `just-doc-function' objects."
    source
    (just-doc-remove-elisp-comments)
    (just-doc-read-all-sexps)
-   (-keep #'just-doc-function-from-sexp)))
+   (-keep #'just-doc-function-from-sexp)
+   (-remove #'just-doc-ignored-function-p)))
 
 (defun just-doc-read-all-sexps (source)
   "Read all Lisp sexps from SOURCE."
@@ -132,8 +133,8 @@ SEXP is list of symbols, like on Elisp source."
     :args (-third-item sexp)
     :docstring (-fourth-item sexp))))
 
-(defun just-doc-ignore-function-p (fun)
-  "Return t, when object of `just-doc-function' FUN shouldn't be viewed."
+(defun just-doc-ignored-function-p (fun)
+  "Return t, when an `just-doc-function' object FUN shouldn't be viewed."
   (s-starts-with-p "just--" (just-doc-function-name fun)))
 
 (defun just-doc-function-to-markdown (fun)
