@@ -274,6 +274,18 @@ proverbial paradise.")
     (should (= (region-beginning) 5))
     (should (= (region-end) 9))))
 
+(ert-deftest just-check-beginning-of-line-text
+    ()
+  (with-temp-buffer
+    (insert "     Some text which isn't located at the bol")
+    (should-not (just-beginning-of-line-text-p))
+    (should (eolp))
+    (beginning-of-line-text)
+    (should (just-beginning-of-line-text-p))
+    (should (= (point) 6))
+    (forward-char -1)
+    (should (just-beginning-of-line-text-p))
+    (should (= (point) 5))))
 
 (provide 'just-test)
 

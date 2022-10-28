@@ -193,6 +193,10 @@ at line"
   (setq pos (or pos (point)))
   (->> pos (just-text-at-line) (s-trim) (string-equal "")))
 
+(defun just-beginning-of-line-text-p (&optional pos)
+  "Go to the beginning of the line at POS.  POS defaults to `point'."
+  (save-excursion (skip-chars-backward " ") (bolp)))
+
 (defun just-line-has-text-p (&optional pos)
   "Return t, when line at POS has text symbols."
   (not (just-line-is-whitespaces-p pos)))

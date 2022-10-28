@@ -106,28 +106,6 @@ Point of each match with one of `REGEXPS` should be found via
 
 Repeat it `COUNT` times, if `COUNT` isn`t positive, then do bacward search
 
-### just--forward-closest-regexp-match-point `(regexps &optional bound arrow)`
-
-Go to the match with one of `REGEXPS` which is closest with the current point.
-
-Point of each match with one of `REGEXPS` should be found via
-`just-forward-point-at-regexp` with passed arguments `BOUND`.
-
-`ARROW` refers to the way in which will do search, if `ARROW` is positive then
-searches will be forward, if `ARROW` is negative, then searches will be backward.
-
-### just--signum `(n)`
-
-Return either 0, if `N` is zero, +1 if `N` is positive or -1 if `N` is negative.
-
-### just--min-by `(compare nums)`
-
-Return the minimal of the `NUMS` comaring with evaluating of the `COMPARE`.
-
-### just--regexp-prefix `(prefix s)`
-
-Return t when the regexp `PREFIX` match with `S` as `prefix`.
-
 ### just-line-regexp-prefix-p `(p &optional pos)`
 
 Return t, when text of line at `POS` start with the regexp `P`.
@@ -151,6 +129,10 @@ at line
 ### just-line-is-whitespaces-p `(&optional pos)`
 
 Return t, when line at `POS` hasn`t text symbols.
+
+### just-beginning-of-line-text-p `(&optional pos)`
+
+Go to the beginning of the line at `POS`.  `POS` defaults to `point`.
 
 ### just-line-has-text-p `(&optional pos)`
 
