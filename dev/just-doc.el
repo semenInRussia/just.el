@@ -163,10 +163,16 @@ ${docstring}
      acc)
     (just-doc-function-docstring fun)
     (just-doc-function-args fun))
-   (s-replace-regexp "`\\(.+?\\)'" "`\\1`")))
+   (s-replace-regexp "`\\(.+?\\)'" "`\\1`")
+   ;; split to paragraphs
+   (s-split "\n\n")
+   (--map (s-replace "\n" " " it))
+   ;; join the paragraphs back
+   (s-join "\n\n")))
 
 (defun just-doc--markdown-denote (s)
   "Denote S with syntax of markdown.
+
 `print` is example of the denoted word"
   (format "`%s`" s))
 
