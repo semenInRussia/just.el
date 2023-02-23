@@ -220,6 +220,16 @@ proverbial paradise.")
     (should (= (just-delete-chars-backward "., ") -4))
     (should (= (point) 2))))
 
+(ert-deftest just-check-delete-word
+    ()
+  (with-temp-buffer
+    (insert "first and second words")
+    (just-delete-word -2)
+    (should (equal (buffer-string) "first and "))
+    (beginning-of-line)
+    (just-delete-word 1)
+    (should (equal (buffer-string) " and "))))
+
 (ert-deftest just-check-spaces-to-1
     ()
   (with-temp-buffer

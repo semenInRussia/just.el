@@ -315,6 +315,34 @@ NOTE: no saving excursion"
     (insert " ")
     (1+ distance)))
 
+(defun just-delete-word (&optional n)
+  "Delete word(s).
+
+Here \"delete word\" means delete characters, until encountering the beginning
+of a word.
+
+N is the amount of the words to delete.  If N is positive, then delete the words
+forward, otherwise delete them backward.  It defaults to 1.
+
+The main difference from `kill-word' is that this function doesn't save a
+deleted text into the `kill-ring'"
+  (setq n (or n 1))
+  (cl-flet
+      ((delete-ch
+        ()
+        (if (> n 0) (delete-char 1) (delete-char -1)))
+       (word-char-p
+        ()
+        (if (> n 0)
+            (looking-at-p "[[:word:]]")
+          (looking-back "[[:word:]]"))))
+    (--dotimes
+        (abs n)
+      ;; clean whitespaces before/after word
+      (while (not (word-char-p)) (delete-ch))
+      ;; delete a word
+      (while (word-char-p) (delete-ch)))))
+
 (defun just-delete-chars-backward (string &optional lim)
   "Delete chars backward, stopping after a char not in STRING, or at pos LIM.
 
