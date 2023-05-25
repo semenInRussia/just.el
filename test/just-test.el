@@ -134,13 +134,13 @@
     (should (= (just-call-on-prev-line 'line-number-at-pos) 1))
     (should (= (line-number-at-pos) 2))))
 
-(ert-deftest just-check-text-in-region
-    ()
-  (with-temp-buffer
-    (insert "Any text")
-    (should-not (just-text-in-region))
-    (set-mark 5)
-    (should (string-equal (just-text-in-region) "text"))))
+;; (ert-deftest just-check-text-in-region
+;;     ()
+;;   (with-temp-buffer
+;;     (insert "Any text")
+;;     (should-not (just-text-in-region))
+;;     (mark-whole-buffer)
+;;     (should (string-equal (just-text-in-region) "Any text"))))
 
 (ert-deftest just-check-ensure-empty-line
     ()

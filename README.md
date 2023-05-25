@@ -608,7 +608,22 @@ Return a major mode of the buffer `BUFFER-OR-NAME`.
 
 `BUFFER-OR-NAME` must be a buffer or the name of an existing buffer. The value returned is the value of the last form in BODY.
 ## Contributing
-Yes, please do! See [CONTRIBUTING][] for guidelines.
+
+Yes, please do! See [CONTRIBUTING][] for guidelines.  In this project I use Eldev, so you can test the project:
+
+```
+eldev test
+```
+
+Byte-Compile the project files:
+
+```
+eldev compile
+```
+
+NOTE: that if you should recompile the files before the `eldev compile` try `eldev clean`
+
+And other things.  For example, `eldev lint`.
 
 ## License
 

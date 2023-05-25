@@ -83,7 +83,7 @@
   ((name :initarg :name :accessor just-doc-function-name)
    (docstring :initarg :docstring :accessor just-doc-function-docstring)
    (args :initarg :args :accessor just-doc-function-args))
-  "Class for function of Emacs lisp.")
+  "Class for function of Emacs Lisp.")
 
 (defun just-doc-from-source (source)
   "Make documentation from elisp SOURCE, return markdown source code."

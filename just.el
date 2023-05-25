@@ -5,7 +5,7 @@
 ;; Author: Semen Khramtsov <hrams205@gmail.com>
 ;; Version: 0.1
 ;; URL: https://github.com/semenInRussia/just.el
-;; Package-Requires: ((emacs "24.3") (dash "2.19.1") (s "1.13.1"))
+;; Package-Requires: ((emacs "24.3") (dash "2.19.1") (s "1.13.1") (f "0.20.0"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -29,8 +29,10 @@
 
 ;;; Code:
 
-(require 'dash)
 (require 'cl-lib)
+
+(require 'dash)
+(require 'f)
 (require 's)
 
 (defun just-reverse-alist (alist)
@@ -127,6 +129,10 @@ Repeat it COUNT times, if COUNT isn't positive, then do bacward search"
                                                       count))
       (cl-decf n))))
 
+(defmacro just--min-by (compare nums)
+  "Return the minimal of the NUMS comaring with evaluating of the COMPARE."
+  `(and ,nums (--min-by ,compare ,nums)))
+
 (defun just--forward-closest-regexp-match-point (regexps &optional bound arrow)
   "Go to the match with one of REGEXPS which is closest with the current point.
 
@@ -154,10 +160,6 @@ searches will be forward, if ARROW is negative, then searches will be backward."
    ((< n 0)
     -1)
    (t 0)))
-
-(defmacro just--min-by (compare nums)
-  "Return the minimal of the NUMS comaring with evaluating of the COMPARE."
-  `(and ,nums (--min-by ,compare ,nums)))
 
 (defun just--regexp-prefix (prefix s)
   "Return t when the regexp PREFIX match with S as prefix."
@@ -234,15 +236,6 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
     inherit-input-method)
    (string-to-number it)))
 
-(defmacro just-for-each-line-when* (begin end pred &rest body)
-  "Eval BODY on start of each line from BEGIN to END when PRED eval to non-nil."
-  (declare (indent 3))
-  `(just-for-each-line* ,begin ,end (when ,pred ,@body)))
-
-(defun just-for-each-line-when (begin end pred f)
-  "Run F on start of each line between BEGIN and END when PRED get non-nil."
-  (just-for-each-line-when* begin end (funcall pred) (funcall f)))
-
 (defmacro just-for-each-line* (begin end &rest body)
   "Evaluate BODY on start of each line from point BEGIN to END."
   (declare (indent 2))
@@ -252,6 +245,16 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
      (while (< (point) ,end)
        ,@body
        (forward-line))))
+
+(defmacro just-for-each-line-when* (begin end pred &rest body)
+  "Eval BODY on start of each line from BEGIN to END when PRED eval to non-nil."
+  (declare (indent 3))
+  `(just-for-each-line* ,begin ,end (when ,pred ,@body)))
+
+(defun just-for-each-line-when (begin end pred f)
+  "Run F on start of each line between BEGIN and END when PRED get non-nil."
+  (just-for-each-line-when* begin end (funcall pred) (funcall f)))
+
 
 (defun just-for-each-line (begin end f)
   "Run F on start of each line beetween BEGIN and END."
@@ -295,8 +298,9 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
 
 (defun just-text-in-region ()
   "If the region is active, return text in the region, otherwise return nil."
-  (when (region-active-p)
-    (buffer-substring (region-beginning) (region-end))))
+  (and
+   (region-active-p)
+   (buffer-substring (region-beginning) (region-end))))
 
 (defun just-ensure-empty-line (&optional pos)
   "If the line at POS isn't empty, then make new empty line after it.
@@ -335,7 +339,7 @@ deleted text into the `kill-ring'"
         ()
         (if (> n 0)
             (looking-at-p "[[:word:]]")
-          (looking-back "[[:word:]]"))))
+          (looking-back "[[:word:]]" nil))))
     (--dotimes
         (abs n)
       ;; clean whitespaces before/after word
