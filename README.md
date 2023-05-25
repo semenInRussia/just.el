@@ -1,4 +1,5 @@
 # just
+[![Run Tests and Eldev Linter](https://github.com/semenInRussia/just.el/actions/workflows/test.yml/badge.svg)](https://github.com/semenInRussia/just.el/actions/workflows/test.yml)
 
 ## Summary
 
