@@ -54,7 +54,7 @@ POS defaults to `point'.  When IS-TRIM is non-nil return trimmed text at line"
   (-->
    (save-excursion
      (goto-char pos)
-     (buffer-substring-no-properties (point-at-bol) (point-at-eol)))
+     (buffer-substring-no-properties (pos-bol) (pos-eol)))
    (if is-trim (s-trim it) it)))
 
 (defun just-forward-point-at-regexp (regexp &optional bound count)
