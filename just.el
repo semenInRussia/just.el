@@ -77,7 +77,7 @@ With COUNT positive/negative, the match found is the COUNTth/-COUNTth
 one in the buffer located entirely after/before the origin of the
 search."
   (save-excursion
-    (and                                ;nofmt
+    (and
      (search-forward-regexp regexp bound t count)
      (point))))
 
@@ -109,7 +109,8 @@ Point of each match with one of REGEXPS should be  via
 `just-forward-point-at-regexp' with passed arguments BOUND.
 
 Repeat it COUNT times, if COUNT isn't positive, then do forward search"
-  (just-search-forward-one-of-regexp regexps bound (- (or count 1))))
+  (just-search-forward-one-of-regexp regexps bound
+                                     (- (or count 1))))
 
 (defun just-search-forward-one-of-regexp (regexps &optional bound count)
   "Go to the forward match with one of REGEXPS which is closest.
@@ -141,9 +142,10 @@ Point of each match with one of REGEXPS should be found via
 
 ARROW refers to the way in which will do search, if ARROW is positive then
 searches will be forward, if ARROW is negative, then searches will be backward."
-  (or arrow (setq arrow 1))
+
   (let ((count (just--signum arrow))
-        (pos (point)))
+        (pos (point))
+        (arrow (or arrow 1)))
     (->>
      regexps
      (--keep (just-forward-point-at-regexp it bound count))
@@ -192,12 +194,16 @@ at line"
 
 (defun just-line-is-whitespaces-p (&optional pos)
   "Return t, when line at POS hasn't text symbols."
-  (setq pos (or pos (point)))
-  (->> pos (just-text-at-line) (s-trim) (string-equal "")))
+  (->>
+   (just-text-at-line (or pos (point)))
+   (s-trim)
+   (string-equal "")))
 
 (defun just-beginning-of-line-text-p (&optional pos)
   "Go to the beginning of the line at POS.  POS defaults to `point'."
-  (save-excursion (skip-chars-backward " ") (bolp)))
+  (save-excursion
+    (skip-chars-backward " ")
+    (bolp)))
 
 (defun just-line-has-text-p (&optional pos)
   "Return t, when line at POS has text symbols."
@@ -205,9 +211,8 @@ at line"
 
 (defun just-buffers-with-ext (ext)
   "Get list of opened buffers, which extension EXT."
-  (->>
-   (buffer-list)
-   (--filter (f-ext-p (buffer-name it) ext))))
+  (--filter (f-ext-p (buffer-name it) ext)
+            (buffer-list)))
 
 (defun just-completing-read-numbers (prompt ; nofmt
                                      collection
@@ -225,15 +230,14 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
    collection
    (-sort #'< it)
    (-map #'number-to-string it)
-   (completing-read
-    prompt
-    it
-    predicate
-    require-match
-    initial-input
-    hist
-    def
-    inherit-input-method)
+   (completing-read prompt
+                    it
+                    predicate
+                    require-match
+                    initial-input
+                    hist
+                    def
+                    inherit-input-method)
    (string-to-number it)))
 
 (defmacro just-for-each-line* (begin end &rest body)
@@ -254,7 +258,6 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
 (defun just-for-each-line-when (begin end pred f)
   "Run F on start of each line between BEGIN and END when PRED get non-nil."
   (just-for-each-line-when* begin end (funcall pred) (funcall f)))
-
 
 (defun just-for-each-line (begin end f)
   "Run F on start of each line beetween BEGIN and END."
@@ -291,10 +294,10 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
 
 (defun just-mark-region-between-movements (start-move &optional end-move)
   "Mark region beetwen 2 points of the call START-MOVE and END-MOVE."
-  (let ((init-pos (point)))
+  (let ((start-point (point)))
     (funcall start-move)
     (set-mark (point))
-    (if end-move (funcall end-move) (goto-char init-pos))))
+    (if end-move (funcall end-move) (goto-char start-point))))
 
 (defun just-text-in-region ()
   "If the region is active, return text in the region, otherwise return nil."
@@ -308,7 +311,7 @@ INHERIT-INPUT-METHOD, see to original function `completing-read'"
 NOTE: no saving excursion"
   (interactive)
   (or pos (setq pos (point)))
-  (unless (just-line-is-whitespaces-p pos) ;nofmt
+  (unless (just-line-is-whitespaces-p pos)
     (goto-char pos)
     (end-of-line)
     (newline-and-indent)))
